@@ -4,10 +4,10 @@
       button(:class='{active: activeId == 1}', @click='activeId = 1') 增
       button(:class='{active: activeId == 4}', @click='activeId = 4') 查
     .content
-      span(v-show='activeId == 1')
+      span(v-show='activeId == 1 || activeId == 3')
         | uid:
         input(type='text', v-model='uid')
-      span(v-show='activeId == 1')
+      span(v-show='activeId == 1 || activeId == 3')
         | comment:
         input(type='text', v-model='comment')
       span
@@ -41,7 +41,7 @@
           td {{ item.updateTime }}
           td
             button(@click="delDoc(item._id)") 删除
-            button(@click="delDoc(item._id)") 修改
+            button(@click="update(item)") 修改
 </template>
 
 <script>
@@ -87,6 +87,15 @@ export default {
         this.getData()
       })
     },
+    update (item) {
+      this.activeId = 3
+      this.url = item.url
+      this.xpath = item.xpath
+      this.selected = item.selected
+      this.index = item.index
+      this.comment = item.comment
+      this.uid = item.uid
+    },
     getParams () {
       return {
         url: this.url,
@@ -103,6 +112,12 @@ export default {
         case 1:
           axios.post(`${url}/add`, data).then(() => {
             this.success('新增成功!')
+            this.getData()
+          })
+          break
+        case 3:
+          axios.post(`${url}/update`, data).then(() => {
+            this.success('更新成功!')
             this.getData()
           })
           break
