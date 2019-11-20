@@ -6,22 +6,19 @@
     .content
       span(v-show='activeId == 1 || activeId == 3')
         | uid:
-        input(type='text', v-model='uid')
-      span(v-show='activeId == 1 || activeId == 3')
+        input(type='text', v-model.trim='uid')
+      span(v-show='activeId !== 2')
         | comment:
-        input(type='text', v-model='comment')
+        input(type='text', v-model.trim='comment')
       span
         | url:
-        input(type='text', v-model='url')
+        input(type='text', v-model.trim='url')
       span
         | xpath:
-        input(type='text', v-model='xpath')
-      span
-        | selected:
-        input(type='text', v-model='selected')
+        input(type='text', v-model.trim='xpath')
       span
         | index:
-        input(type='text', v-model='index')
+        input(type='text', v-model.trim='index')
     .operate
       button(@click="submit") 提交
     .database
@@ -56,7 +53,6 @@ export default {
       activeId: 1,
       url:'',
       xpath:'',
-      selected:'',
       index:'',
       comment:'',
       uid: '',

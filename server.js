@@ -68,9 +68,31 @@ app.post('/filterData', bodyParser.json(), function(req, res) {
   MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err
     let myobj = req.body
+    delete myobj.uid
     let dbo = db.db("note")
-    console.log('lhz myobj:', myobj)
-    dbo.collection("note"). find({url: myobj.url}).toArray(function(err, result) { // 返回集合中所有数据
+    let qand = []
+    for (let prop in myobj) {
+      if (!myobj[prop]) {
+        delete myobj[prop]
+      } else {
+        if (prop !== 'comment') {
+          qand.push({[prop]: myobj[prop]})
+        }
+      }
+    }
+    let query = {}
+    if (myobj.comment) {
+      let comment = myobj.comment
+      delete myobj.comment
+      query = {
+        $or : [{comment : {$regex : `.\*${comment}.\*`}}],
+        $and: qand
+      }
+    } else {
+      query = {...myobj}
+    }
+    console.log('lhz query:', query)
+    dbo.collection("note"). find(query).toArray(function(err, result) { // 返回集合中所有数据
       if (err) throw err
       res.send(JSON.stringify(result))
       db.close()
