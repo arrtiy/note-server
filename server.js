@@ -38,7 +38,7 @@ app.get('/delete', bodyParser.json(), function(req, res) {
   MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err
     var dbo = db.db("note")
-    dbo.collection("note").findAndRemove({_id: new ObjectID(req.query.id)})
+    dbo.collection("note").remove({_id: ObjectID(req.query.id)})
     res.send('删除成功!')
   })
 })
