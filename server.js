@@ -2,7 +2,7 @@ var express = require('express')
 var app = express()
 var bodyParser = require('body-parser')
 const chalk = require('chalk')
-var ObjectID = require('mongodb').ObjectID;
+var ObjectID = require('mongodb').ObjectID
 
 // 允许所有的请求形式
 app.use(function(req, res, next) {
@@ -22,6 +22,9 @@ app.post('/add', bodyParser.json(), function(req, res) {
   MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err
     let myobj = req.body
+    // 存入时间
+    let date = new Date(new Date().getTime() + 8 * 3600 * 1000)
+    myobj.createdAt = date.toJSON().substr(0, 19).replace('T', ' ')
     let dbo = db.db("note")
     dbo.collection("note").insertOne(myobj, function(err, res) {
       if (err) throw err
@@ -40,15 +43,20 @@ app.get('/delete', bodyParser.json(), function(req, res) {
   })
 })
 
-app.get('/update', bodyParser.json(), function(req, res) {
+app.post('/update', bodyParser.json(), function(req, res) {
   MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err
     let dbo = db.db("note")
-    dbo.collection("test"). find({}).toArray(function(err, result) { // 返回集合中所有数据
+    let params = req.body
+    let id = params._id
+    delete params._id
+    let whereStr = {'_id': ObjectID(id)}  // 查询条件
+    let updateStr = {$set: { ...params }}
+    dbo.collection("note").updateOne(whereStr, updateStr, function(err, res) {
       if (err) throw err
-      res.send(JSON.stringify(result))
       db.close()
     })
+    res.send("文档更新成功")
   })
 })
 
@@ -91,7 +99,6 @@ app.post('/filterData', bodyParser.json(), function(req, res) {
     } else {
       query = {...myobj}
     }
-    console.log('lhz query:', query)
     dbo.collection("note"). find(query).toArray(function(err, result) { // 返回集合中所有数据
       if (err) throw err
       res.send(JSON.stringify(result))

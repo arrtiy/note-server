@@ -27,18 +27,22 @@
           td uid
           td url
           td xpath
+          td index
           td comment
-          td updateTime
+          td createdAt
+          td updatedAt
           td 操作
         tr(v-for="(item, index) in data" :key="index")
           td {{ item.uid }}
           td {{ item.url }}
           td {{ item.xpath }}
+          td {{ item.index }}
           td {{ item.comment }}
-          td {{ item.updateTime }}
+          td {{ item.createdAt }}
+          td {{ item.updatedAt }}
           td
             button(@click="delDoc(item._id)") 删除
-            button(@click="update(item)") 修改
+            button(@click="update(item, index)" :class="{active: activeBtn == index}") 修改
 </template>
 
 <script>
@@ -57,6 +61,8 @@ export default {
       comment:'',
       uid: '',
       data: [],
+      activeBtn: null,
+      cur_id: '',
     }
   },
   created() {
@@ -83,14 +89,16 @@ export default {
         this.getData()
       })
     },
-    update (item) {
+    update (item, index) {
       this.activeId = 3
+      this.activeBtn = index
       this.url = item.url
       this.xpath = item.xpath
       this.selected = item.selected
       this.index = item.index
       this.comment = item.comment
       this.uid = item.uid
+      this.cur_id = item._id
     },
     getParams () {
       return {
@@ -112,6 +120,7 @@ export default {
           })
           break
         case 3:
+          data._id = this.cur_id
           axios.post(`${url}/update`, data).then(() => {
             this.success('更新成功!')
             this.getData()
@@ -122,7 +131,6 @@ export default {
             this.success('查询成功!')
             let docs = data.data
             this.data = docs
-            console.log('lhz docs:', docs)
           })
           break
       }
@@ -167,9 +175,11 @@ export default {
   .database
     table
       margin 20px auto
-      width 700px
+      width 900px
       tr:nth-child(1)
         text-align center
       td
         text-align center
+        button.active
+          background #f56c6c
 </style>
