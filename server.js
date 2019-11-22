@@ -12,7 +12,7 @@ app.use(function(req, res, next) {
 })
 
 var MongoClient = require('mongodb').MongoClient
-var url = "mongodb://172.23.102.172:27017/note"
+var url = "mongodb://172.23.102.172:27017"
 
 app.get('/', function(req, res) {
   res.send('Hello, word!')
